@@ -16,7 +16,9 @@ const answers = {
     1: "4",
     2: "pi",
     3: "GoldQuicksilverSilverIronGold",
-    4: "silver"
+    4: "silver",
+    5: "ANDORNOTXORANDNAND",
+    6:
 };
 
 async function getStatus() {
