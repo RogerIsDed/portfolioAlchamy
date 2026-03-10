@@ -1,7 +1,10 @@
+import { decodeNote } from "./decoder.mjs";
+
 const baseURL = "https://alchemy-kd0l.onrender.com";
 const startURL = `${baseURL}/start`;
 const statusURL = `${baseURL}/status`;
 const submitURL = `${baseURL}/submit`;
+const clueURL = `${baseURL}/clue`;
 
 let token = null;
 let promptShown = false;
@@ -18,9 +21,9 @@ const answers = {
     3: "GoldQuicksilverSilverIronGold",
     4: "silver",
     5: "ANDORNOTXORANDNAND",
-    6:
+    6: "LUNAVENUSSOL" 
 };
-
+//SILVERCOPPERGOLDLEAD
 async function getStatus() {
     const res = await fetch(statusURL, {
         method: "GET",
@@ -56,31 +59,68 @@ async function submitAnswer(answer) {
     });
 
     const data = await res.json();
-    console.log(data.message);
+    console.log("Answer response:", data.message);
 }
 
-async function start() {
-    const res = await fetch(startURL, {
-        method: "POST",
+async function getClue() {
+    const res = await fetch(clueURL, {
+        method: "GET",
         headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userConfig)
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": token
+        }
     });
 
     const data = await res.json();
-    token = data.token;
-
-    console.log("Token:", token);
-
-    const challengeId = await getStatus();
-
-    if (answers[challengeId]) {
-        await submitAnswer(answers[challengeId]);
-        await getStatus();
-    } else {
-        console.log("No stored answer for this challenge yet.");
-    }
+    console.log("\n🔎 CLUE:");
+    console.log(data.clue);
 }
 
+async function start() {
+    try {
+        // Start session
+        const res = await fetch(startURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userConfig)
+        });
+
+        const data = await res.json();
+        console.log("Start response:", data);
+
+        token = data.token;
+
+        if (!token) {
+            console.log("Failed to get token.");
+            return;
+        }
+
+        console.log("Token:", token);
+
+        // Get challenge status
+        const challengeId = await getStatus();
+
+        // Run decoder locally for debugging
+        console.log("\nDecoded note locally:");
+        console.log(decodeNote());
+
+        // Submit answer if we have one stored
+        if (answers[challengeId]) {
+            console.log("\nSubmitting answer:", answers[challengeId]);
+            await submitAnswer(answers[challengeId]);
+            await getStatus();
+        } else {
+            console.log("No stored answer for this challenge yet.");
+        }
+
+        // Fetch a clue
+        await getClue();
+
+    } catch (error) {
+        console.error("Error during start:", error);
+    }
+}
 start();
