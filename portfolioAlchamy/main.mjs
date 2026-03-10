@@ -1,4 +1,10 @@
 import { decodeNote } from "./decoder.mjs";
+import {
+    metalsToPlanets,
+    metalsToSymbols,
+    symbolsToMetals,
+    symbolsToPlanets
+} from "./alchemy.mjs";
 
 const baseURL = "https://alchemy-kd0l.onrender.com";
 const startURL = `${baseURL}/start`;
@@ -79,7 +85,8 @@ async function getClue() {
 
 async function start() {
     try {
-        // Start session
+
+    
         const res = await fetch(startURL, {
             method: "POST",
             headers: {
@@ -89,34 +96,64 @@ async function start() {
         });
 
         const data = await res.json();
+
         console.log("Start response:", data);
 
         token = data.token;
 
         if (!token) {
-            console.log("Failed to get token.");
+            console.log("No token received. Server might be asleep.");
             return;
         }
 
         console.log("Token:", token);
 
-        // Get challenge status
+        
         const challengeId = await getStatus();
 
-        // Run decoder locally for debugging
-        console.log("\nDecoded note locally:");
-        console.log(decodeNote());
+        
+        const decoded = decodeNote();
 
-        // Submit answer if we have one stored
+        console.log("\nDecoded message:");
+        console.log(decoded);
+
+        
+        const metals = decoded
+            .replace(/\n/g, " ")
+            .toLowerCase()
+            .split(" ");
+
+        console.log("\nMetals detected:");
+        console.log(metals);
+
+        
+        const planets = metalsToPlanets(metals);
+        const symbols = metalsToSymbols(metals);
+
+        console.log("\nPlanet associations:");
+        console.log(planets);
+
+        console.log("\nAlchemy symbols:");
+        console.log(symbols);
+
+        
+        const symbolString = symbols.join("");
+
+        console.log("\nSymbol string:");
+        console.log(symbolString);
+
+        
         if (answers[challengeId]) {
             console.log("\nSubmitting answer:", answers[challengeId]);
+
             await submitAnswer(answers[challengeId]);
+
             await getStatus();
         } else {
             console.log("No stored answer for this challenge yet.");
         }
 
-        // Fetch a clue
+        
         await getClue();
 
     } catch (error) {
