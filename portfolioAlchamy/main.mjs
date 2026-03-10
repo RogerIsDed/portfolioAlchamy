@@ -15,7 +15,8 @@ const userConfig = {
 const answers = {
     1: "4",
     2: "pi",
-    3: "GoldQuicksilverSilverIronGold"
+    3: "GoldQuicksilverSilverIronGold",
+    4: "silver"
 };
 
 async function getStatus() {
