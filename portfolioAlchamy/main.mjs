@@ -25,7 +25,7 @@ token = respons.token;
 console.log(token);
 console.log(startURL);
 
-respons = await (await fetch(submitURL, {
+respons = await (await fetch(statusURL, {
     method: "GET",
     headers: {
         "Accept": "application/json",
@@ -36,4 +36,16 @@ respons = await (await fetch(submitURL, {
 
 console.log(respons);
 
+
+respons = await (await fetch(submitURL, {
+    method: "POST",
+    headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": token,
+    },
+    body: JSON.stringify({"answer": "4"}) 
+})).json();
+
+console.log(respons);
 
