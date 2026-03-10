@@ -83,3 +83,26 @@ respons = await (await fetch(statusURL, {
 })).json();
 
 console.log(respons);
+
+respons = await (await fetch(submitURL, {
+    method: "POST",
+    headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": token,
+    },
+    body: JSON.stringify({"answer": "GoldQuicksilverSilverIronGold"}) 
+})).json();
+
+console.log(respons);
+
+respons = await (await fetch(statusURL, {
+    method: "GET",
+    headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": token,
+    }
+})).json();
+
+console.log(respons);
